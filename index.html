@@ -3,53 +3,45 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#f7f4ef">
 <title>Meine gelesenen Bücher</title>
 <style>
 :root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#262a26;background:#f7f4ef}
-*{box-sizing:border-box}
-body{margin:0}
-main{max-width:680px;margin:auto;padding:24px 16px 48px}
-h1{font-size:29px;margin:0 0 6px;letter-spacing:-.6px}
-h2{font-size:18px;margin:0 0 12px}
+*{box-sizing:border-box}body{margin:0}main{max-width:720px;margin:auto;padding:24px 16px 48px}
+h1{font-size:29px;margin:0 0 6px}h2{font-size:18px;margin:0 0 12px}
 p,.muted{color:#6c716c;font-size:14px;line-height:1.5}
-.panel{background:white;border:1px solid #e5e2dc;border-radius:17px;padding:16px;margin:16px 0}
+.panel{background:#fff;border:1px solid #e5e2dc;border-radius:17px;padding:16px;margin:16px 0}
 label{display:block;font-size:13px;font-weight:650;margin:12px 0 6px}
-input{width:100%;padding:12px;font:inherit;border:1px solid #d8d8d1;border-radius:10px;background:white}
+input,select{width:100%;padding:12px;font:inherit;border:1px solid #d8d8d1;border-radius:10px;background:white;color:#262a26;min-height:44px}
 button{border:0;border-radius:10px;padding:12px 14px;font:inherit;font-weight:650;background:#315b4c;color:white;cursor:pointer;min-height:44px}
-button.secondary{background:#eeefeb;color:#262a26}
-button.danger{background:#f8e8e5;color:#8d3026}
-button:disabled{opacity:.55}
-.actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
-.actions button{flex:1}
+button.secondary{background:#eeefeb;color:#262a26}button.danger{background:#f8e8e5;color:#8d3026}
+button:disabled{opacity:.55}.actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}.actions button{flex:1}
 .top{display:flex;justify-content:space-between;align-items:center;gap:12px}
 .count{background:#e4ece6;color:#315b4c;border-radius:20px;padding:8px 11px;font-weight:700;white-space:nowrap}
-.row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #eee}
-.row:last-child{border-bottom:0}
-.info{flex:1;min-width:0}
-.booktitle{font-weight:700;overflow-wrap:anywhere}
-.author{font-size:13px;color:#6c716c;margin-top:4px}
+.book-row,.result{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid #eee}
+.book-row:last-child,.result:last-child{border-bottom:0}.info{flex:1;min-width:0}
+.booktitle{font-weight:700;overflow-wrap:anywhere;line-height:1.35}
+.author{font-size:13px;color:#6c716c;margin-top:4px;overflow-wrap:anywhere}
+.cover,.placeholder{width:58px;height:82px;object-fit:cover;border-radius:5px;background:#eeefeb;flex-shrink:0}
+.placeholder{display:flex;align-items:center;justify-content:center;color:#64766b;font-size:26px}
 .small{font-size:13px;padding:8px 10px;min-height:36px}
 .status{font-size:13px;line-height:1.5;margin-top:10px;overflow-wrap:anywhere}
-.error{color:#a52e25}
-.ok{color:#315b4c}
-.hidden{display:none!important}
+.error{color:#a52e25}.ok{color:#315b4c}.hidden{display:none!important}
+.note{font-size:12px;color:#6c716c;line-height:1.5}
+#scanner{width:100%;overflow:hidden;border-radius:12px;margin-top:12px}
 </style>
 </head>
 <body>
 <main>
 <header class="top">
-  <div>
-    <h1>Meine Bücher</h1>
-    <div class="muted">Meine persönliche Liste gelesener Bücher</div>
-  </div>
+  <div><h1>Meine Bücher</h1><div class="muted">Meine persönliche Liste gelesener Bücher</div></div>
   <div id="count" class="count">0 Bücher</div>
 </header>
 
 <section id="authPanel" class="panel">
   <h2>Anmelden</h2>
-  <p>Melde dich auf beiden Geräten mit demselben Konto an.</p>
+  <p>Melde dich auf Laptop und iPhone mit demselben Konto an.</p>
   <label for="email">E-Mail-Adresse</label>
   <input id="email" type="email" autocomplete="email" placeholder="du@beispiel.de">
   <label for="password">Passwort</label>
@@ -64,320 +56,384 @@ button:disabled{opacity:.55}
 <div id="app" class="hidden">
   <section class="panel">
     <div class="top">
-      <div>
-        <h2>Deine Bücherliste</h2>
-        <div id="signedIn" class="muted"></div>
-      </div>
+      <div><h2>Deine Bücherliste</h2><div id="signedIn" class="muted"></div></div>
       <button id="logoutBtn" class="secondary small">Abmelden</button>
     </div>
-    <label for="filter">Meine Bücher durchsuchen</label>
-    <input id="filter" placeholder="Titel oder Autor">
+    <label for="filter">Liste durchsuchen</label>
+    <input id="filter" placeholder="Titel, Autor oder ISBN">
+    <label for="sort">Sortieren nach</label>
+    <select id="sort">
+      <option value="title">Titel (A–Z)</option>
+      <option value="author">Autor (A–Z)</option>
+      <option value="newest">Zuletzt hinzugefügt</option>
+    </select>
     <div id="bookList"></div>
     <div id="listStatus" class="status" aria-live="polite"></div>
   </section>
 
   <section class="panel">
+    <h2>ISBN / Barcode scannen</h2>
+    <p>Richte die Kamera auf den Barcode auf der Buchrückseite. Die App sucht anschließend nach den Buchdaten.</p>
+    <div class="actions">
+      <button id="startScan">Kamera starten</button>
+      <button id="stopScan" class="secondary" disabled>Scan beenden</button>
+    </div>
+    <div id="scanner" class="hidden"></div>
+    <div id="scanStatus" class="status" aria-live="polite"></div>
+    <p class="note">Die Kamera benötigt HTTPS und deine Zustimmung. Falls der Scanner nicht funktioniert, kannst du die ISBN auch unten eingeben.</p>
+  </section>
+
+  <section class="panel">
     <h2>Online-Buchsuche</h2>
-    <label for="query">Titel oder Autor</label>
-    <input id="query" placeholder="z. B. Der Hobbit oder Tolkien">
-    <div class="actions"><button id="searchBtn">Bücher suchen</button></div>
+    <label for="query">Titel, Autor oder ISBN</label>
+    <input id="query" placeholder="z. B. Der Hobbit oder ISBN">
+    <div class="actions"><button id="searchBtn">Online suchen</button></div>
     <div id="searchStatus" class="status" aria-live="polite"></div>
     <div id="results"></div>
   </section>
 
   <section class="panel">
-    <h2>Buch manuell hinzufügen</h2>
+    <h2 id="formHeading">Buch manuell hinzufügen</h2>
     <label for="manualTitle">Titel *</label>
     <input id="manualTitle" placeholder="Buchtitel">
     <label for="manualAuthor">Autor</label>
     <input id="manualAuthor" placeholder="Autor (optional)">
     <label for="manualIsbn">ISBN</label>
     <input id="manualIsbn" inputmode="numeric" placeholder="ISBN (optional)">
-    <div class="actions"><button id="manualAdd">Buch speichern</button></div>
+    <label for="manualCover">Cover-Bildadresse (optional)</label>
+    <input id="manualCover" type="url" placeholder="Wird bei der Suche ergänzt">
+    <div class="actions">
+      <button id="saveBook">Buch speichern</button>
+      <button id="cancelEdit" class="secondary hidden">Abbrechen</button>
+    </div>
     <div id="addStatus" class="status" aria-live="polite"></div>
   </section>
 </div>
-<p>Deine Bücher werden in deiner Supabase-Datenbank gespeichert. Melde dich auf jedem Gerät mit demselben Konto an.</p>
+<p class="note">Deine Bücher werden in Supabase gespeichert. Cover werden von externen Buchkatalogen geladen.</p>
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://unpkg.com/html5-qrcode"></script>
 <script>
 (() => {
-  const SUPABASE_URL = "https://ncegsdxwdtghbajsltwj.supabase.co";
-  const SUPABASE_KEY = "sb_publishable_0XjFDV9JJ1YKoEakZI0XAw_tFwT8kAD";
+"use strict";
 
-  const $ = id => document.getElementById(id);
-  const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  let currentUser = null;
-  let books = [];
+const SUPABASE_URL = "https://ncegsdxwdtghbajsltwj.supabase.co";
+const SUPABASE_KEY = "sb_publishable_0XjFDV9JJ1YKoEakZI0XAw_tFwT8kAD";
+const $ = id => document.getElementById(id);
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let user = null, books = [], editingId = null, scanner = null, scanning = false, scanLocked = false;
 
-  function status(id, message, error = false) {
-    const el = $(id);
-    el.textContent = message;
-    el.className = "status" + (error ? " error" : " ok");
+function msg(id, text, error = false) {
+  $(id).textContent = text;
+  $(id).className = "status" + (error ? " error" : " ok");
+}
+function clean(v) { return (v || "").trim(); }
+function isbnClean(v) { return clean(v).replace(/[^0-9Xx]/g,"").toUpperCase(); }
+function imageUrl(v) {
+  try { const u = new URL(v); return u.protocol === "https:" ? u.href : ""; }
+  catch (_) { return ""; }
+}
+function coverElement(url, title) {
+  const src = imageUrl(url);
+  if (!src) {
+    const p = document.createElement("div");
+    p.className = "placeholder"; p.textContent = "📖";
+    p.setAttribute("aria-label","Kein Cover verfügbar");
+    return p;
   }
+  const img = document.createElement("img");
+  img.className = "cover"; img.alt = "Cover: " + (title || "Buch");
+  img.loading = "lazy"; img.referrerPolicy = "no-referrer"; img.src = src;
+  img.onerror = () => {
+    const p = document.createElement("div");
+    p.className = "placeholder"; p.textContent = "📖"; img.replaceWith(p);
+  };
+  return img;
+}
 
-  function clean(value) {
-    return (value || "").trim();
+async function loadBooks() {
+  if (!user) return;
+  msg("listStatus","Bücher werden geladen …");
+  const {data,error} = await db.from("books")
+    .select("id,title,author,isbn,cover_url,created_at")
+    .order("title",{ascending:true});
+  if (error) { msg("listStatus","Laden fehlgeschlagen: "+error.message,true); return; }
+  books = data || [];
+  renderBooks();
+  msg("listStatus",books.length ? "Deine Bücherliste ist aktuell." : "Deine Liste ist noch leer.");
+}
+
+function renderBooks() {
+  const list = $("bookList");
+  list.replaceChildren();
+  const q = clean($("filter").value).toLocaleLowerCase("de");
+  const shown = books.filter(b =>
+    [b.title,b.author,b.isbn].join(" ").toLocaleLowerCase("de").includes(q));
+  const sort = $("sort").value;
+  shown.sort((a,b) => {
+    if (sort === "author")
+      return (a.author || "").localeCompare(b.author || "","de") ||
+             (a.title || "").localeCompare(b.title || "","de");
+    if (sort === "newest")
+      return (b.created_at || "").localeCompare(a.created_at || "");
+    return (a.title || "").localeCompare(b.title || "","de");
+  });
+  $("count").textContent = books.length+" "+(books.length===1?"Buch":"Bücher");
+  if (!shown.length) {
+    const p = document.createElement("p");
+    p.textContent = books.length ? "Keine passenden Bücher gefunden." : "Hier erscheinen deine Bücher.";
+    list.append(p); return;
   }
+  shown.forEach(book => {
+    const row = document.createElement("div"); row.className = "book-row";
+    row.append(coverElement(book.cover_url,book.title));
+    const info = document.createElement("div"); info.className = "info";
+    const title = document.createElement("div"); title.className = "booktitle"; title.textContent = book.title;
+    const author = document.createElement("div"); author.className = "author"; author.textContent = book.author || "Autor unbekannt";
+    const isbn = document.createElement("div"); isbn.className = "author"; isbn.textContent = book.isbn ? "ISBN: "+book.isbn : "";
+    info.append(title,author,isbn);
+    const buttons = document.createElement("div");
+    buttons.style.cssText = "display:flex;flex-direction:column;gap:6px";
+    const edit = document.createElement("button"); edit.className = "secondary small"; edit.textContent = "Bearbeiten";
+    edit.onclick = () => beginEdit(book);
+    const del = document.createElement("button"); del.className = "danger small"; del.textContent = "Löschen";
+    del.onclick = async () => {
+      if (!confirm("„"+book.title+"“ aus deiner Liste entfernen?")) return;
+      del.disabled = true;
+      const {error} = await db.from("books").delete().eq("id",book.id);
+      if (error) { msg("listStatus","Löschen fehlgeschlagen: "+error.message,true); del.disabled=false; }
+      else await loadBooks();
+    };
+    buttons.append(edit,del); row.append(info,buttons); list.append(row);
+  });
+}
 
-  async function loadBooks() {
-    if (!currentUser) return;
-    status("listStatus", "Bücher werden geladen …");
-    const { data, error } = await client
-      .from("books")
-      .select("id,title,author,isbn,created_at")
-      .order("title", { ascending: true });
+function beginEdit(book) {
+  editingId = book.id;
+  $("formHeading").textContent = "Buch bearbeiten";
+  $("manualTitle").value = book.title || "";
+  $("manualAuthor").value = book.author || "";
+  $("manualIsbn").value = book.isbn || "";
+  $("manualCover").value = book.cover_url || "";
+  $("saveBook").textContent = "Änderungen speichern";
+  $("cancelEdit").classList.remove("hidden");
+  msg("addStatus","Du bearbeitest „"+book.title+"“.");
+  $("formHeading").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function resetForm() {
+  editingId = null;
+  $("formHeading").textContent = "Buch manuell hinzufügen";
+  $("manualTitle").value = ""; $("manualAuthor").value = "";
+  $("manualIsbn").value = ""; $("manualCover").value = "";
+  $("saveBook").textContent = "Buch speichern";
+  $("cancelEdit").classList.add("hidden");
+  msg("addStatus","");
+}
 
-    if (error) {
-      status("listStatus", "Fehler beim Laden: " + error.message, true);
+async function saveBook(title,author,isbn,cover) {
+  title=clean(title); author=clean(author); isbn=isbnClean(isbn); cover=imageUrl(cover);
+  if (!title) { msg("addStatus","Bitte gib einen Titel ein.",true); return false; }
+  const duplicate = books.some(b => String(b.id)!==String(editingId) &&
+    (b.title||"").toLocaleLowerCase("de")===title.toLocaleLowerCase("de") &&
+    (b.author||"").toLocaleLowerCase("de")===author.toLocaleLowerCase("de"));
+  if (duplicate && !confirm("Dieses Buch scheint bereits vorhanden zu sein. Trotzdem speichern?")) return false;
+
+  const payload={title,author:author||null,isbn:isbn||null,cover_url:cover||null};
+  let result;
+  if (editingId !== null) {
+    result=await db.from("books").update(payload).eq("id",editingId).select("id");
+  } else {
+    payload.user_id=user.id;
+    result=await db.from("books").insert(payload).select("id");
+  }
+  if (result.error) { msg("addStatus","Speichern fehlgeschlagen: "+result.error.message,true); return false; }
+  msg("addStatus",editingId!==null?"Änderungen gespeichert.":"Buch hinzugefügt.");
+  resetForm(); await loadBooks(); return true;
+}
+
+function fillForm(book,isbnFallback="") {
+  $("manualTitle").value=book.title || "";
+  $("manualAuthor").value=(book.authors||[]).join(", ");
+  $("manualIsbn").value=book.isbn || isbnFallback;
+  $("manualCover").value=imageUrl(book.cover || "");
+  editingId=null;
+  $("formHeading").textContent="Buch prüfen und hinzufügen";
+  $("saveBook").textContent="Buch speichern";
+  $("formHeading").scrollIntoView({behavior:"smooth",block:"start"});
+  msg("addStatus","Bitte prüfe die Angaben und speichere das Buch.");
+}
+
+async function lookupIsbn(value) {
+  const isbn=isbnClean(value);
+  if (!isbn) { msg("searchStatus","Bitte eine ISBN eingeben oder scannen.",true); return; }
+  $("query").value=isbn;
+  msg("searchStatus","Suche nach ISBN "+isbn+" …");
+  $("results").replaceChildren();
+  try {
+    const r=await fetch("https://www.googleapis.com/books/v1/volumes?q="+encodeURIComponent("isbn:"+isbn)+"&maxResults=5");
+    if (!r.ok) throw Error("Google Books nicht erreichbar");
+    const data=await r.json(), item=(data.items||[])[0];
+    if (item) {
+      const v=item.volumeInfo||{}, ids=v.industryIdentifiers||[];
+      fillForm({
+        title:v.title,authors:v.authors,
+        isbn:ids.find(x=>x.type==="ISBN_13")?.identifier ||
+             ids.find(x=>x.type==="ISBN_10")?.identifier || isbn,
+        cover:(v.imageLinks||{}).thumbnail || (v.imageLinks||{}).smallThumbnail || ""
+      },isbn);
+      msg("searchStatus","Buch gefunden. Angaben prüfen und speichern.");
       return;
     }
-    books = data || [];
-    renderBooks();
-    status("listStatus", books.length
-      ? "Deine Bücherliste ist aktuell."
-      : "Noch keine Bücher gespeichert.");
-  }
-
-  function renderBooks() {
-    const list = $("bookList");
-    list.replaceChildren();
-    const filter = clean($("filter").value).toLocaleLowerCase("de");
-    const visible = books.filter(book =>
-      ((book.title || "") + " " + (book.author || "") + " " + (book.isbn || ""))
-        .toLocaleLowerCase("de").includes(filter)
-    );
-
-    $("count").textContent = books.length + " " +
-      (books.length === 1 ? "Buch" : "Bücher");
-
-    if (!visible.length) {
-      const empty = document.createElement("p");
-      empty.textContent = books.length
-        ? "Keine passenden Bücher gefunden."
-        : "Deine Liste ist noch leer.";
-      list.append(empty);
-      return;
-    }
-
-    visible.forEach(book => {
-      const row = document.createElement("div");
-      row.className = "row";
-      const info = document.createElement("div");
-      info.className = "info";
-      const title = document.createElement("div");
-      title.className = "booktitle";
-      title.textContent = book.title;
-      const author = document.createElement("div");
-      author.className = "author";
-      author.textContent = (book.author || "Autor unbekannt") +
-        (book.isbn ? " · ISBN " + book.isbn : "");
-      info.append(title, author);
-
-      const del = document.createElement("button");
-      del.className = "danger small";
-      del.textContent = "Löschen";
-      del.onclick = async () => {
-        if (!confirm("„" + book.title + "“ aus deiner Liste entfernen?")) return;
-        del.disabled = true;
-        const { error } = await client.from("books")
-          .delete().eq("id", book.id);
-        if (error) {
-          status("listStatus", "Löschen fehlgeschlagen: " + error.message, true);
-          del.disabled = false;
-        } else {
-          await loadBooks();
-        }
-      };
-      row.append(info, del);
-      list.append(row);
-    });
-  }
-
-  async function addBook(title, author = "", isbn = "") {
-    title = clean(title);
-    author = clean(author);
-    isbn = clean(isbn).replace(/[-\s]/g, "");
-
-    if (!title) {
-      status("addStatus", "Bitte gib einen Titel ein.", true);
-      return false;
-    }
-
-    const duplicate = books.some(b =>
-      b.title.toLocaleLowerCase("de") === title.toLocaleLowerCase("de") &&
-      (b.author || "").toLocaleLowerCase("de") === author.toLocaleLowerCase("de")
-    );
-    if (duplicate) {
-      status("addStatus", "Dieses Buch steht bereits in deiner Liste.", true);
-      return false;
-    }
-
-    const { error } = await client.from("books").insert({
-      title,
-      author: author || null,
-      isbn: isbn || null,
-      user_id: currentUser.id
-    });
-
-    if (error) {
-      status("addStatus", "Speichern fehlgeschlagen: " + error.message, true);
-      return false;
-    }
-    status("addStatus", "Buch erfolgreich gespeichert.");
-    await loadBooks();
-    return true;
-  }
-
-  async function authenticate(action) {
-    const email = clean($("email").value);
-    const password = $("password").value;
-    if (!email || !password) {
-      status("authStatus", "Bitte E-Mail-Adresse und Passwort eingeben.", true);
-      return;
-    }
-
-    $("loginBtn").disabled = true;
-    $("signupBtn").disabled = true;
-    status("authStatus", "Bitte warten …");
-
-    try {
-      let result;
-      if (action === "signup") {
-        result = await client.auth.signUp({ email, password });
-      } else {
-        result = await client.auth.signInWithPassword({ email, password });
-      }
-
-      if (result.error) {
-        status("authStatus", result.error.message, true);
-      } else if (action === "signup" && !result.data.session) {
-        status("authStatus",
-          "Registrierung erfolgreich. Bitte prüfe deine E-Mails und bestätige deine Adresse, falls eine Bestätigung verlangt wird.");
-      } else {
-        status("authStatus", "Anmeldung erfolgreich.");
-      }
-    } catch (e) {
-      status("authStatus", "Verbindung fehlgeschlagen. Bitte URL und Internetverbindung prüfen.", true);
-    } finally {
-      $("loginBtn").disabled = false;
-      $("signupBtn").disabled = false;
-    }
-  }
-
-  async function searchBooks() {
-    const query = clean($("query").value);
-    if (!query) {
-      status("searchStatus", "Bitte Titel oder Autor eingeben.", true);
-      return;
-    }
-
-    $("results").replaceChildren();
-    $("searchBtn").disabled = true;
-    status("searchStatus", "Suche läuft …");
-
-    try {
-      const url = "https://openlibrary.org/search.json?q=" +
-        encodeURIComponent(query) +
-        "&fields=key,title,author_name,isbn,first_publish_year&limit=10";
-      const response = await fetch(url);
-      if (!response.ok) throw new Error("Suchdienst nicht erreichbar.");
-      const data = await response.json();
-      const results = data.docs || [];
-
-      if (!results.length) {
-        status("searchStatus", "Keine Treffer. Du kannst das Buch manuell eintragen.");
-        return;
-      }
-      status("searchStatus", results.length + " Treffer gefunden.");
-
-      results.forEach(book => {
-        const row = document.createElement("div");
-        row.className = "row";
-        const info = document.createElement("div");
-        info.className = "info";
-        const title = document.createElement("div");
-        title.className = "booktitle";
-        title.textContent = book.title || "Ohne Titel";
-        const author = document.createElement("div");
-        author.className = "author";
-        author.textContent = (book.author_name || []).join(", ") || "Autor unbekannt";
-        if (book.first_publish_year) author.textContent += " · " + book.first_publish_year;
-        info.append(title, author);
-
-        const btn = document.createElement("button");
-        btn.className = "small";
-        btn.textContent = "Hinzufügen";
-        btn.onclick = async () => {
-          btn.disabled = true;
-          const isbn = (book.isbn || [])[0] || "";
-          const ok = await addBook(book.title, (book.author_name || []).join(", "), isbn);
-          if (ok) {
-            btn.textContent = "Gespeichert";
-            status("searchStatus", "Buch wurde deiner Liste hinzugefügt.");
-          } else {
-            btn.disabled = false;
-          }
-        };
-        row.append(info, btn);
-        $("results").append(row);
-      });
-    } catch (e) {
-      status("searchStatus",
-        "Die Online-Suche ist gerade nicht erreichbar. Du kannst das Buch manuell eintragen.",
-        true);
-    } finally {
-      $("searchBtn").disabled = false;
-    }
-  }
-
-  function showSession(session) {
-    currentUser = session ? session.user : null;
-    $("authPanel").classList.toggle("hidden", !!currentUser);
-    $("app").classList.toggle("hidden", !currentUser);
-    if (currentUser) {
-      $("signedIn").textContent = "Angemeldet: " + currentUser.email;
-      loadBooks();
+    const r2=await fetch("https://openlibrary.org/api/books?bibkeys=ISBN:"+encodeURIComponent(isbn)+"&format=json&jscmd=data");
+    const d2=await r2.json(), b=d2["ISBN:"+isbn];
+    if (b) {
+      fillForm({title:b.title,authors:(b.authors||[]).map(a=>a.name),isbn,cover:b.cover?.large||b.cover?.medium||""},isbn);
+      msg("searchStatus","Buch bei Open Library gefunden. Angaben prüfen und speichern.");
     } else {
-      books = [];
-      renderBooks();
-      $("signedIn").textContent = "";
+      $("manualIsbn").value=isbn;
+      msg("searchStatus","Kein Treffer. Du kannst die Angaben manuell ergänzen.");
     }
+  } catch (_) {
+    $("manualIsbn").value=isbn;
+    msg("searchStatus","Die Online-Suche ist nicht erreichbar. Du kannst das Buch manuell eintragen.",true);
   }
+}
 
-  $("loginBtn").onclick = () => authenticate("login");
-  $("signupBtn").onclick = () => authenticate("signup");
-  $("logoutBtn").onclick = async () => {
-    const { error } = await client.auth.signOut();
-    if (error) status("listStatus", error.message, true);
-  };
-  $("manualAdd").onclick = async () => {
-    const ok = await addBook(
-      $("manualTitle").value,
-      $("manualAuthor").value,
-      $("manualIsbn").value
+async function searchBooks() {
+  const q=clean($("query").value);
+  if (!q) { msg("searchStatus","Bitte Titel, Autor oder ISBN eingeben.",true); return; }
+  const isbn=isbnClean(q);
+  if (/^(97[89])?\d{9}[\dX]$/.test(isbn)) { await lookupIsbn(isbn); return; }
+  $("results").replaceChildren(); $("searchBtn").disabled=true;
+  msg("searchStatus","Suche läuft …");
+  try {
+    const r=await fetch("https://www.googleapis.com/books/v1/volumes?q="+encodeURIComponent(q)+"&maxResults=10");
+    if (!r.ok) throw Error("Suche fehlgeschlagen");
+    const data=await r.json(), items=data.items||[];
+    if (!items.length) { msg("searchStatus","Keine Treffer. Du kannst das Buch manuell eintragen."); return; }
+    msg("searchStatus",items.length+" Treffer gefunden.");
+    items.forEach(item=>{
+      const v=item.volumeInfo||{}, ids=v.industryIdentifiers||[];
+      const isbn=ids.find(x=>x.type==="ISBN_13")?.identifier||ids.find(x=>x.type==="ISBN_10")?.identifier||"";
+      const cover=(v.imageLinks||{}).thumbnail||(v.imageLinks||{}).smallThumbnail||"";
+      const row=document.createElement("div"); row.className="result";
+      row.append(coverElement(cover,v.title));
+      const info=document.createElement("div"); info.className="info";
+      const t=document.createElement("div"); t.className="booktitle"; t.textContent=v.title||"Ohne Titel";
+      const a=document.createElement("div"); a.className="author";
+      a.textContent=(v.authors||[]).join(", ")||"Autor unbekannt";
+      if(isbn) a.textContent+=" · ISBN "+isbn;
+      info.append(t,a);
+      const btn=document.createElement("button"); btn.className="small"; btn.textContent="Übernehmen";
+      btn.onclick=()=>fillForm({title:v.title,authors:v.authors,isbn,cover},isbn);
+      row.append(info,btn); $("results").append(row);
+    });
+  } catch (_) {
+    msg("searchStatus","Online-Suche momentan nicht erreichbar. Bitte später erneut versuchen.",true);
+  } finally { $("searchBtn").disabled=false; }
+}
+
+async function stopScanner(reset=true) {
+  if (scanner && scanning) {
+    try { await scanner.stop(); } catch (_) {}
+    try { scanner.clear(); } catch (_) {}
+  }
+  scanner=null; scanning=false;
+  if(reset) scanLocked=false;
+  $("scanner").classList.add("hidden");
+  $("startScan").disabled=false; $("stopScan").disabled=true;
+}
+
+async function startScanner() {
+  if (!window.Html5Qrcode) { msg("scanStatus","Scanner-Bibliothek konnte nicht geladen werden. Lade die Seite neu.",true); return; }
+  if (scanning) return;
+  $("startScan").disabled=true;
+  $("scanner").classList.remove("hidden");
+  msg("scanStatus","Kamera wird gestartet …");
+  try {
+    scanner=new Html5Qrcode("scanner");
+    await scanner.start(
+      {facingMode:"environment"},
+      {fps:10,qrbox:{width:260,height:130},formatsToSupport:[
+        Html5QrcodeSupportedFormats.EAN_13,
+        Html5QrcodeSupportedFormats.EAN_8,
+        Html5QrcodeSupportedFormats.UPC_A,
+        Html5QrcodeSupportedFormats.UPC_E
+      ]},
+      async text=>{
+        if(scanLocked) return;
+        const code=isbnClean(text);
+        if(!/^(97[89])?\d{9}[\dX]$/.test(code)) {
+          msg("scanStatus","Barcode erkannt, aber keine gültige Buch-ISBN. Bitte erneut scannen.");
+          return;
+        }
+        scanLocked=true;
+        msg("scanStatus","ISBN erkannt: "+code+". Suche Buchdaten …");
+        await stopScanner(false);
+        await lookupIsbn(code);
+      },
+      ()=>{}
     );
-    if (ok) {
-      $("manualTitle").value = "";
-      $("manualAuthor").value = "";
-      $("manualIsbn").value = "";
-    }
-  };
-  $("searchBtn").onclick = searchBooks;
-  $("query").addEventListener("keydown", e => {
-    if (e.key === "Enter") searchBooks();
-  });
-  $("filter").addEventListener("input", renderBooks);
+    scanning=true;
+    $("stopScan").disabled=false;
+    msg("scanStatus","Kamera aktiv. Halte den Barcode ruhig in den Rahmen.");
+  } catch (_) {
+    $("scanner").classList.add("hidden");
+    $("startScan").disabled=false;
+    msg("scanStatus","Kamera nicht verfügbar. Erlaube den Kamerazugriff in Safari und nutze die HTTPS-Adresse.",true);
+  }
+}
 
-  client.auth.onAuthStateChange((_event, session) => {
-    showSession(session);
-  });
+function showSession(session) {
+  user=session ? session.user : null;
+  $("authPanel").classList.toggle("hidden",!!user);
+  $("app").classList.toggle("hidden",!user);
+  if(user) {
+    $("signedIn").textContent="Angemeldet: "+user.email;
+    loadBooks();
+  } else {
+    books=[]; renderBooks(); stopScanner();
+  }
+}
 
-  client.auth.getSession().then(({ data, error }) => {
-    if (error) status("authStatus", error.message, true);
-    showSession(data.session);
-  });
+$("loginBtn").onclick=async()=>{
+  const email=clean($("email").value),password=$("password").value;
+  if(!email||!password) { msg("authStatus","Bitte E-Mail und Passwort eingeben.",true); return; }
+  $("loginBtn").disabled=true;
+  const {error}=await db.auth.signInWithPassword({email,password});
+  $("loginBtn").disabled=false;
+  if(error) msg("authStatus",error.message,true);
+};
+$("signupBtn").onclick=async()=>{
+  const email=clean($("email").value),password=$("password").value;
+  if(!email||!password) { msg("authStatus","Bitte E-Mail und Passwort eingeben.",true); return; }
+  $("signupBtn").disabled=true;
+  const {data,error}=await db.auth.signUp({email,password});
+  $("signupBtn").disabled=false;
+  if(error) msg("authStatus",error.message,true);
+  else if(!data.session) msg("authStatus","Bitte prüfe deine E-Mails und bestätige deine Adresse.");
+  else msg("authStatus","Konto erstellt.");
+};
+$("logoutBtn").onclick=async()=>{
+  const {error}=await db.auth.signOut();
+  if(error) msg("listStatus",error.message,true);
+};
+$("saveBook").onclick=()=>saveBook($("manualTitle").value,$("manualAuthor").value,$("manualIsbn").value,$("manualCover").value);
+$("cancelEdit").onclick=resetForm;
+$("filter").addEventListener("input",renderBooks);
+$("sort").addEventListener("change",renderBooks);
+$("searchBtn").onclick=searchBooks;
+$("query").addEventListener("keydown",e=>{if(e.key==="Enter") searchBooks();});
+$("manualIsbn").addEventListener("keydown",e=>{if(e.key==="Enter") lookupIsbn($("manualIsbn").value);});
+$("startScan").onclick=startScanner;
+$("stopScan").onclick=()=>stopScanner();
+
+db.auth.onAuthStateChange((_event,session)=>showSession(session));
+db.auth.getSession().then(({data,error})=>{
+  if(error) msg("authStatus",error.message,true);
+  showSession(data.session);
+});
 })();
 </script>
 </body>
